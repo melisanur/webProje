@@ -26,7 +26,7 @@
             <div class="filter-group">
 
                 <div v-if="hasActiveFilters">
-                    <hr>
+                    <hr class="hr">
                     <h3 class="filter-header">Seçili Filtreler</h3>
                 </div>
                 <!-- Tüm Filtreleri Temizle Butonu -->
@@ -47,7 +47,7 @@
 
                 <!-- Ürün Türü Filtre Grubu -->
 
-                <hr>
+                <hr class="hr">
                 <h3 @click="toggleFilter('type')" class="filter-header">
                     Ürün Türü
                     <img :class="{ rotated: isFilterExpanded('type') }" src="public/arrow-down.png" alt="Toggle Icon"
@@ -65,7 +65,7 @@
 
             <!-- Tema Filtre Grubu -->
             <div class="filter-group">
-                <hr>
+                <hr class="hr">
                 <h3 @click="toggleFilter('theme')" class="filter-header">
                     Tema
                     <img :class="{ rotated: isFilterExpanded('theme') }" src="public/arrow-down.png" alt="Toggle Icon"
@@ -83,7 +83,7 @@
 
             <!-- İlgi Alanı Filtre Grubu -->
             <div class="filter-group">
-                <hr>
+                <hr class="hr">
                 <h3 @click="toggleFilter('category')" class="filter-header">
                     İlgi Alanı
                     <img :class="{ rotated: isFilterExpanded('category') }" src="public/arrow-down.png"
@@ -103,7 +103,7 @@
 
             <!-- Yaş Filtre Grubu -->
             <div class="filter-group">
-                <hr />
+                <hr class="hr">
                 <h3 @click="toggleFilter('age')" class="filter-header">
                     Yaş
                     <img :class="{ rotated: isFilterExpanded('age') }" src="public/arrow-down.png" alt="Toggle Icon"
@@ -122,7 +122,7 @@
 
             <!-- Parça Sayısı Filtre Grubu -->
             <div class="filter-group">
-                <hr>
+                <hr class="hr">
                 <h3 @click="toggleFilter('pieceCount')" class="filter-header">
                     Parça Sayısı
                     <img :class="{ rotated: isFilterExpanded('pieceCount') }" src="public/arrow-down.png"
@@ -141,7 +141,7 @@
 
             <!-- Öne Çıkanlar Filtre Grubu -->
             <div class="filter-group">
-                <hr>
+                <hr class="hr">
                 <h3 @click="toggleFilter('special')" class="filter-header">
                     Öne çıkanlar
                     <img :class="{ rotated: isFilterExpanded('special') }" src="public/arrow-down.png" alt="Toggle Icon"
@@ -161,7 +161,8 @@
         <!-- Ürün Kartları -->
         <main class="products">
             <div v-if="filteredProducts.length === 0">Hiç ürün bulunamadı.</div>
-            <div class="product-card" v-for="product in filteredProducts" :key="product.id">
+            <div class="product-card" v-for="product in filteredProducts" :key="product.id"
+                @mouseenter="handleMouseEnter(product.id)" @mouseleave="handleMouseLeave(product.id)">
                 <div class="carousel">
                     <img v-for="(image, index) in product.images" :key="index" :src="image" :alt="product.name"
                         v-show="activeImageIndex[product.id] === index" class="product-image" />
@@ -189,18 +190,30 @@
                     <div class="product-name">{{ product.name }}</div>
                     <div class="product-price">{{ product.price }} TL</div>
                 </div>
-                <div class="add-to-cart-container">
-                    <div v-if="hover" class="quantity-controls">
-                        <button @click="decreaseQuantity(product.id)">-</button>
-                        <span>{{ quantities[product.id] || 1 }}</span>
-                        <button @click="increaseQuantity(product.id)">+</button>
+                <button v-if="!hoverState[product.id]" class="add-to-cart-button">
+                    SEPETE EKLE
+                </button>
+                <!-- Hover Button -->
+                <div class="bosluk2"></div>
+                <div v-if="hoverState[product.id]" class="add-to-cart-overlay" @click="addItemToCart">
+                    <div class="q-btn">
+                        <button class="quantity-button-left" @click.stop="decreaseQuantity">
+                            <h6 class="q-button q-button-left">
+                                -
+                            </h6>
+                        </button>
+                        <button class="quantity">
+                            {{ quantity }}
+                        </button>
+                        <button class="quantity-button-right" @click.stop="increaseQuantity">
+                            <h6 class="q-button q-button-right">
+                                +
+                            </h6>
+                        </button>
                     </div>
-                    <button @click="addToCart(product.id)" class="add-to-cart-button" :class="{ hover: hover }">
-                        Sepete Ekle
-                    </button>
-                </div>
-                <div v-if="!hover" class="add-to-cart-placeholder">
-                    Sepete Ekle
+                    <h6 class="add-cart-text">
+                        SEPETE EKLE
+                    </h6>
                 </div>
             </div>
         </main>
@@ -211,6 +224,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useProductStore } from '@/store/products';
+import { useCartStore } from '@/store/cart';
 
 const productStore = useProductStore();
 
@@ -296,13 +310,13 @@ const nextImage = (productId: number) => {
 
 const canGoPrev = (productId: number) => {
     const currentIndex = activeImageIndex.value[productId];
-    return currentIndex > 0; 
+    return currentIndex > 0;
 };
 
 const canGoNext = (productId: number) => {
     const currentIndex = activeImageIndex.value[productId];
     const totalImages = productStore.products.find((product) => product.id === productId)?.images.length || 1;
-    return currentIndex < totalImages - 1; 
+    return currentIndex < totalImages - 1;
 };
 
 const isSpecialProduct = (product: { special: string }) => {
@@ -331,7 +345,7 @@ const getCountsForFilter = (filterKey: string, options: any[]) => {
             }).filter(product => {
                 // Apply other filters except 'pieceCount'
                 return Object.keys(filters.value).every((key) => {
-                    if (key === 'pieceCount') return true; 
+                    if (key === 'pieceCount') return true;
                     if ((filters.value as Record<string, string[]>)[key].length === 0) return true;
                     return (filters.value as Record<string, string[]>)[key].includes((product as Record<string, any>)[key]);
                 });
@@ -342,7 +356,7 @@ const getCountsForFilter = (filterKey: string, options: any[]) => {
                 return (product as Record<string, any>)[filterKey] === option.label || (product as Record<string, any>)[filterKey] === option;
             }).filter(product => {
                 return Object.keys(filters.value).every(key => {
-                    if (key === filterKey) return true; 
+                    if (key === filterKey) return true;
                     if ((filters.value as Record<string, any>)[key].length === 0) return true;
                     return (filters.value as Record<string, any>)[key].includes((product as Record<string, any>)[key]);
                 });
@@ -386,29 +400,42 @@ const clearAllFilters = (): void => {
     }
 };
 
-/** SEPETE EKLEME YERİ BURASI BURAYA EKLEME YAPICAZ SANIRIM */
-// Hover state
-const hover = ref(false);
+// Props for the product details
+const { product } = defineProps({
+    product: {
+        type: Object as () => { id: string; name: string; price: number; image: string },
+        required: true,
+    },
+});
 
-// Quantity state
-const quantities = ref<{ [key: number]: number }>({});
 
-const decreaseQuantity = (id: number) => {
-  if (quantities.value[id] > 1) {
-    quantities.value[id]--;
-  }
+// Hover state for product cards
+const hoverState = ref<{ [key: number]: boolean }>({});
+
+const handleMouseEnter = (productId: number) => {
+    hoverState.value[productId] = true;
 };
 
-const increaseQuantity = (id: number) => {
-  if (!quantities.value[id]) {
-    quantities.value[id] = 1;
-  }
-  quantities.value[id]++;
+const handleMouseLeave = (productId: number) => {
+    hoverState.value[productId] = false;
 };
 
-const addToCart = (productId: number) => {
-    const quantity = quantities.value[productId] || 1;
+const quantity = ref(1); // Default quantity is 1
+const cartStore = useCartStore();
+
+// Methods
+const decreaseQuantity = () => {
+    if (quantity.value > 1) quantity.value--;
 };
+
+const increaseQuantity = () => {
+    quantity.value++;
+};
+
+const addItemToCart = () => {
+    cartStore.addToCart({ id: product.id, name: product.name, quantity: quantity.value });
+};
+
 </script>
 
 <style scoped>
@@ -420,7 +447,7 @@ const addToCart = (productId: number) => {
     margin: 0 auto;
     /* Merkezi hizalama */
     max-width: calc(100% - 354px);
-    /* Sağdan ve soldan 350px boşluk */
+    /* Sağdan ve soldan 354px boşluk */
 }
 
 /* Yeni eklenen stil */
@@ -433,14 +460,13 @@ const addToCart = (productId: number) => {
 
 .filters {
     width: 230px;
-    margin-top: -15px;
+    margin-top: 0px;
     /* Header ile arasındaki boşluğu kapat */
 }
 
 .filter-group {
     margin-top: 0px;
     overflow-x: hidden;
-
 }
 
 .filter-group h3 {
@@ -449,6 +475,7 @@ const addToCart = (productId: number) => {
     font-weight: bold;
     color: #333;
     cursor: pointer;
+    font-weight: 500;
 }
 
 .filter-group .filter-header {
@@ -456,6 +483,7 @@ const addToCart = (productId: number) => {
     justify-content: space-between;
     cursor: pointer;
     user-select: none;
+    padding-bottom: 5px;
 }
 
 .filter-options {
@@ -490,12 +518,14 @@ const addToCart = (productId: number) => {
 }
 
 .product-card {
+    position: relative;
     border: 1px solid #ddd;
     overflow: hidden;
     background-color: #fff;
     padding: 20px 10px;
     width: 415px;
-    height: 690px; /** BURASINI 580 YAPICAZ SADECE O BUTON GEÇİŞİNİ GÖRMEK İÇİN DURUYO */
+    height: 600px;
+    /** BURASINI 580 YAPICAZ SADECE O BUTON GEÇİŞİNİ GÖRMEK İÇİN DURUYO */
     text-align: center;
     box-sizing: border-box;
 }
@@ -654,6 +684,10 @@ const addToCart = (productId: number) => {
     height: 100px;
 }
 
+.hr {
+    margin-top: 0px;
+}
+
 .toggle-icon {
     width: 16px;
     height: 16px;
@@ -677,10 +711,6 @@ const addToCart = (productId: number) => {
     background-color: white;
     cursor: pointer;
     position: relative;
-}
-
-.filter-option input[type="checkbox"]:hover {
-    border-color: black;
 }
 
 .filter-option input[type="checkbox"]:checked::after {
@@ -755,49 +785,15 @@ const addToCart = (productId: number) => {
     font-weight: bold;
 }
 
-quantity-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 10px;
-}
-
-.quantity-controls button {
-    background-color: #f2f2f2;
-    border: 1px solid #ccc;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.quantity-controls span {
-    margin: 0 10px;
-    font-size: 16px;
-}
-
-.add-to-cart-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 10px;
-}
-
-/* Add to Cart Button */
 .add-to-cart-button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    margin-top: 10px;
+    padding: 15px 150px;
     font-size: 16px;
-    margin-left: 10px;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-}
-
-.add-to-cart-button:hover {
-    background-color: #0056b3;
+    color: black;
+    cursor: pointer;
+    border-radius: 6px;
 }
 
 /* Product Price */
@@ -806,5 +802,89 @@ quantity-controls {
     font-weight: bold;
     margin-top: 10px;
     text-align: center;
+}
+
+.bosluk2{
+    height: 10px;
+}
+/* Hover Overlay */
+.add-to-cart-overlay {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffd502;
+    padding: 8px 62px;
+    border-radius: 5px;
+    margin-left: 2px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.q-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: -40px;
+}
+
+.quantity {
+    border-radius: 4px;
+    border: 1px solid white;
+    background-color: white;
+    padding: 6px 60px;
+    font-size: 13px;
+}
+
+/* Quantity Buttons */
+.quantity-button-left {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    width: 19px;
+    height: 18px;
+    font-size: 12px;
+    margin-right: -25px;
+    z-index: 1;
+}
+
+.quantity-button-right {
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    width: 19px;
+    height: 18px;
+    font-size: 12px;
+    margin-left: -25px;
+    z-index: 1;
+}
+
+.q-button {
+    margin-top: -5px;
+}
+
+.q-button-left {
+    margin-left: 0px;
+}
+
+.q-button-right {
+    margin-left: -2px;
+}
+
+.quantity-button:hover {
+    background-color: #cccccc;
+}
+
+.add-cart-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+    margin-top: 4px;
+    margin-left: 69px;
 }
 </style>
