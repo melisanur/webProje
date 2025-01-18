@@ -81,18 +81,18 @@ export default {
 
 <style scoped>
 .navbar-container {
-  background-color: #f7f7f7;
-  padding-top: 10px;
+  background-color: #ffffff;
+  padding-top: 0px;
   position: relative;
 }
 
 .top-space {
   height: 15px;
-  background-color: #f7f7f7;
+  background-color: #ffffff;
 }
 
 .lego-navbar {
-  background-color: #ffee33;
+  background-color: #ffd502;
   height: 64px;
   border-bottom: 2px solid #ffffff;
   display: flex;
