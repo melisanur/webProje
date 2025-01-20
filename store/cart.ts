@@ -1,16 +1,19 @@
 import { defineStore } from 'pinia';
+import { getDatabase, ref, set } from 'firebase/database';
 
 export const useCartStore = defineStore('cart', {
   state: () => ({
-    items: [] as { id: string; name: string; quantity: number }[],
+    items: [] as { id: string; name: string; price: number; image: string; quantity: number }[],
   }),
   actions: {
-    addToCart(item: { id: string; name: string; quantity: number }) {
-      const existingItem = this.items.find((i) => i.id === item.id);
-      if (existingItem) {
-        existingItem.quantity += item.quantity;
-      } else {
+    async addToCart(item: { id: string; name: string; price: number; image: string; quantity: number }) {
+      const db = getDatabase();
+      const cartRef = ref(db, `cart/${item.id}`);
+      try {
+        await set(cartRef, item);
         this.items.push(item);
+      } catch (error) {
+        console.error("Sepete ekleme sırasında hata oluştu:", error);
       }
     },
   },

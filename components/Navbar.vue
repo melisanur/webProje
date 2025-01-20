@@ -25,7 +25,7 @@
             <a href="#" class="nav-link">YARDIM</a>
           </li>
           <li class="nav-item">
-            <button class="btn btn-light text-danger btn-new-year">YENİ YIL</button>
+            <button href="#" class="nav-link">YENİ YIL</button>
           </li>
         </ul>
 
@@ -36,15 +36,17 @@
             <input
               type="text"
               class="form-control"
-              placeholder=""
+              placeholder="Ara..."
               aria-label="Search"
             />
             <button type="submit" class="btn search-icon-btn">
               <i class="bi bi-search"></i>
             </button>
           </form>
-          <!-- Sağdaki ikon -->
+          <!-- Sağdaki ikonlar -->
           <i class="bi bi-heart ms-3"></i>
+          <!-- Sepet simgesi -->
+          <i class="bi bi-cart ms-3 cart-icon" @click="navigateToCart"></i>
         </div>
       </div>
     </nav>
@@ -75,11 +77,16 @@ export default {
     closeCategories() {
       this.categoriesVisible = false;
     },
+    navigateToCart() {
+      // Vue Router ile '/cart' sayfasına yönlendirme
+      this.$router.push("/cart");
+    },
   },
 };
 </script>
 
 <style scoped>
+/* Genel Navbar ayarları */
 .navbar-container {
   background-color: #ffffff;
   padding-top: 0px;
@@ -109,7 +116,7 @@ export default {
 
 /* Menü */
 .navbar-menu {
-  gap: 30px; /* Menü öğeleri arasındaki mesafe */
+  gap: 30px;
 }
 
 .navbar-menu .nav-link {
@@ -128,7 +135,6 @@ export default {
   gap: 15px;
 }
 
-/* Arama kısmı */
 .search-bar {
   max-width: 300px;
 }
@@ -148,6 +154,16 @@ export default {
 }
 
 .search-icon-btn:hover {
+  color: #d40000;
+}
+
+/* Sepet simgesi */
+.cart-icon {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.cart-icon:hover {
   color: #d40000;
 }
 

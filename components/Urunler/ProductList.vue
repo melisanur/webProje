@@ -195,25 +195,17 @@
                 </button>
                 <!-- Hover Button -->
                 <div class="bosluk2"></div>
-                <div v-if="hoverState[product.id]" class="add-to-cart-overlay" @click="addItemToCart">
+                <div v-if="hoverState[product.id]" class="add-to-cart-overlay" @click="addItemToCart(product)">
                     <div class="q-btn">
                         <button class="quantity-button-left" @click.stop="decreaseQuantity">
-                            <h6 class="q-button q-button-left">
-                                -
-                            </h6>
+                            <h6 class="q-button q-button-left">-</h6>
                         </button>
-                        <button class="quantity">
-                            {{ quantity }}
-                        </button>
+                        <button class="quantity">{{ quantity }}</button>
                         <button class="quantity-button-right" @click.stop="increaseQuantity">
-                            <h6 class="q-button q-button-right">
-                                +
-                            </h6>
+                            <h6 class="q-button q-button-right">+</h6>
                         </button>
                     </div>
-                    <h6 class="add-cart-text">
-                        SEPETE EKLE
-                    </h6>
+                    <h6 class="add-cart-text">SEPETE EKLE</h6>
                 </div>
             </div>
         </main>
@@ -432,8 +424,20 @@ const increaseQuantity = () => {
     quantity.value++;
 };
 
-const addItemToCart = () => {
-    cartStore.addToCart({ id: product.id, name: product.name, quantity: quantity.value });
+const addItemToCart = (product: {
+  id: number;
+  name: string;
+  price: number;
+  images: string[];
+}) => {
+  cartStore.addToCart({
+    id: product.id.toString(),
+    name: product.name,
+    price: product.price,
+    image: product.images[0], // İlk görseli kullan
+    quantity: quantity.value, // Miktar
+  });
+  alert(`${product.name} sepete eklendi!`);
 };
 
 </script>
@@ -804,9 +808,10 @@ const addItemToCart = () => {
     text-align: center;
 }
 
-.bosluk2{
+.bosluk2 {
     height: 10px;
 }
+
 /* Hover Overlay */
 .add-to-cart-overlay {
     position: absolute;

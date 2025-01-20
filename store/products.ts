@@ -1,4 +1,5 @@
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
+import { getDatabase, ref, set } from "firebase/database";
 
 // 1. Define TypeScript Interfaces for Strong Typing
 interface Product {
@@ -9,7 +10,7 @@ interface Product {
   age: string;
   pieceCount: number | null;
   type: string;
-  theme: string;
+  theme: string; 
   category: string;
   special: string;
   price: number;
@@ -214,6 +215,21 @@ export const useProductStore = defineStore('products', {
     },
     setSort(sortValue: string) {
       this.selectedSort = sortValue;
+    },
+    async addToCart(product: Product) {
+      const db = getDatabase();
+      const cartRef = ref(db, `cart/${product.id}`);
+      const cartItem = {
+        ...product,
+        quantity: 1, // Varsayılan olarak 1 adet
+      };
+    
+      try {
+        await set(cartRef, cartItem);
+        alert(`${product.name} sepete eklendi!`);
+      } catch (error) {
+        console.error("Sepete ekleme sırasında hata oluştu:", error);
+      }
     },
   },
 });
