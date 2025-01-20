@@ -55,7 +55,7 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
   margin: 40px auto;
-  max-width: 1199px;
+  max-width: 1200px;
 }
 
 .product-card {
