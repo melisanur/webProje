@@ -3,14 +3,14 @@ import { getDatabase } from "firebase/database";
 
 export default defineNuxtPlugin(() => {
   const firebaseConfig = {
-    apiKey: "AIzaSyBi3p_8p_2g-tmCyCcsjhYqKdq5srBnIIs",
-    authDomain: "web-proje-69f7a.firebaseapp.com",
-    databaseURL: "https://web-proje-69f7a-default-rtdb.firebaseio.com",
-    projectId: "web-proje-69f7a",
-    storageBucket: "web-proje-69f7a.firebasestorage.app",
-    messagingSenderId: "455482248165",
-    appId: "1:455482248165:web:ad535bfb9954b342d97d0c",
-    measurementId: "G-MNXBRZCHD3",
+    apiKey: "AIzaSyCXvvDuC0uHJtPbCyOGktwQoJYebQ62XmY",
+    authDomain: "webp-70ef3.firebaseapp.com",
+    databaseURL: "https://webp-70ef3-default-rtdb.firebaseio.com",
+    projectId: "webp-70ef3",
+    storageBucket: "webp-70ef3.firebasestorage.app",
+    messagingSenderId: "178169931274",
+    appId: "1:178169931274:web:367a74786b2b24b3b1a1f3",
+    databaseURL: "https://webp-70ef3-default-rtdb.firebaseio.com",
   };
 
   // Firebase uygulamasını başlatmadan önce kontrol et
