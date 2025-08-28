@@ -16,7 +16,7 @@
         <!-- Orta menü -->
         <ul class="navbar-menu d-flex list-unstyled mb-0 flex-grow-1">
           <li class="nav-item">
-            <a href="#" class="nav-link">ÜRÜNLER</a>
+            <a href="/urunler" class="nav-link">ÜRÜNLER</a>
           </li>
           <li class="nav-item">
             <a href="#" class="nav-link">KEŞİF</a>

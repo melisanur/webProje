@@ -1,12 +1,15 @@
 <template>
   <div class="bosluk"></div>
-  <div class="oyun-alani-kutu">
+  <div class="oyun-alani-kutu" @click="goHome">
     <span class="left-arrow">←</span>
     <span class="oyun-alani-text">OYUN ALANI</span>
   </div>
 </template>
 
 <script lang="ts" setup>
+const goHome = () => {
+  navigateTo('/')
+}
 </script>
 
 <style scoped>
